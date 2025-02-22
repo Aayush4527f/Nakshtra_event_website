@@ -8,12 +8,20 @@ const Prisma = new PrismaClient();
 //this controller is used to add event, only admin can add event
 export const addEvent = async (req, res) => {
   try {
+    const isAdmin = await prisma.admin.findUnique({
+      where: { id: req.userId },
+    });
+    
+    if (!isAdmin) {
+      return res.status(403).json({ message: "Access denied. Only admins can access this route." });
+    }
+
     const validation = addEventSchema.safeParse(req.body);
     if (!validation.success) {
     return res.status(400)
               .json({ message: "Invalid data", validation: validation.error });
     }
-
+    
     const { name, description, price, image } = validation.data;
     const event = await Prisma.event.create({
       data: {
@@ -34,6 +42,13 @@ export const addEvent = async (req, res) => {
 //this controller is used to delete event by id, only admin can delete event
 export const deleteEventById = async (req, res) => {
     try {
+      const isAdmin = await prisma.admin.findUnique({
+        where: { id: req.userId },
+      });
+      
+      if (!isAdmin) {
+        return res.status(403).json({ message: "Access denied. Only admins can access this route." });
+      }      
       const { eventId } = req.params;
       await Prisma.event.delete({
         where: {
@@ -50,6 +65,14 @@ export const deleteEventById = async (req, res) => {
   //this controller is used to update event by id, only admin can update event
 export const updateEventById = async (req, res) => {
     try {
+      const isAdmin = await prisma.admin.findUnique({
+        where: { id: req.userId },
+      });
+      
+      if (!isAdmin) {
+        return res.status(403).json({ message: "Access denied. Only admins can access this route." });
+      }
+      
       const { eventId } = req.params;
       const validation = addEventSchema.safeParse(req.body);
       if (!validation.success) {
