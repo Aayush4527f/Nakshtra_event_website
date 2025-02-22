@@ -8,8 +8,8 @@ const Prisma = new PrismaClient();
 //this controller is used to add event, only admin can add event
 export const addEvent = async (req, res) => {
   try {
-    const isAdmin = await prisma.admin.findUnique({
-      where: { id: req.userId },
+    const isAdmin = await Prisma.admin.findUnique({
+      where: { id: req.body.userId },
     });
     
     if (!isAdmin) {
@@ -42,8 +42,8 @@ export const addEvent = async (req, res) => {
 //this controller is used to delete event by id, only admin can delete event
 export const deleteEventById = async (req, res) => {
     try {
-      const isAdmin = await prisma.admin.findUnique({
-        where: { id: req.userId },
+      const isAdmin = await Prisma.admin.findUnique({
+        where: { id: req.body.userId },
       });
       
       if (!isAdmin) {
@@ -65,8 +65,8 @@ export const deleteEventById = async (req, res) => {
   //this controller is used to update event by id, only admin can update event
 export const updateEventById = async (req, res) => {
     try {
-      const isAdmin = await prisma.admin.findUnique({
-        where: { id: req.userId },
+      const isAdmin = await Prisma.admin.findUnique({
+        where: { id: req.body.userId },
       });
       
       if (!isAdmin) {

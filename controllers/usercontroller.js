@@ -64,8 +64,8 @@ export const login = async (req, res) => {
 //this controller is used for adding admin in web application, only admin can add admin
 export const addAdmin = async (req, res) => {
   try {
-    const isAdmin = await prisma.admin.findUnique({
-      where: { id: req.userId },
+    const isAdmin = await Prisma.admin.findUnique({
+      where: { id: req.body.userId },
     });
     
     if (!isAdmin) {
@@ -98,6 +98,7 @@ export const addAdmin = async (req, res) => {
       }
     }
   } catch (error) {
+    console.error(error.message);
     return res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -107,7 +108,7 @@ export const addImage = async (req, res) => {
   try {
     const { userId, images } = req.body;
 
-    const registeredUser = await prisma.registration.findUnique({
+    const registeredUser = await Prisma.registration.findUnique({
       where: { userid: userId },
       select: { imagecount: true },
     });
@@ -123,7 +124,7 @@ export const addImage = async (req, res) => {
     }
 
     
-    const image = await prisma.image.create({
+    const image = await Prisma.image.create({
       data: {
         image: images,
         userid: userId,
@@ -134,7 +135,7 @@ export const addImage = async (req, res) => {
       return res.status(400).json({ message: "Image not created" });
     }
 
-    await prisma.registration.update({
+    await Prisma.registration.update({
       where: { userid: userId },
       data: {
         imagecount: registeredUser.imagecount + 1,
@@ -169,7 +170,7 @@ export const voteImage = async (req, res) => {
         .json({ message: "You have already voted for this image" });
     }
 
-    await prisma.image.update({
+    await Prisma.image.update({
       where: { id: imageId },
       data: {
         votes: image.votes + 1,
